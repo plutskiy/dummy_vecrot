@@ -7,6 +7,10 @@ namespace bmstu {
     template<typename Type>
     class dummy_vector {
     public:
+        /// только заметил, что мы ошиблись)
+        /// const_iterator -> это объект где конст pointer
+        struct const_iterator;
+
         struct iterator {
             using iterator_category = std::random_access_iterator_tag;
             using difference_type = std::ptrdiff_t;
@@ -14,7 +18,11 @@ namespace bmstu {
             using pointer = Type *;
             using reference = Type &;
 
-            iterator(pointer ptr) : m_ptr(ptr){}
+            iterator(pointer ptr) : m_ptr(ptr) {}
+
+            operator const_iterator() {
+                return const_iterator(m_ptr);
+            }
 
             reference operator*() const {
                 return *m_ptr;
@@ -77,7 +85,80 @@ namespace bmstu {
             pointer m_ptr;
         };
 
-        using const_iterator = const iterator;
+        /// константный итератор это итератор который
+        /// значение типа константное и ссылка константная
+        /// мы можем перемещаться по памяти .. но вот изменить объект не сможем
+        struct const_iterator {
+            using iterator_category = std::random_access_iterator_tag;
+            using difference_type = std::ptrdiff_t;
+            using value_type = const Type;
+            using pointer = Type *;
+            using reference = const Type &;
+
+            const_iterator(pointer ptr) : m_ptr(ptr) {}
+
+            reference operator*() const {
+                return *m_ptr;
+            }
+
+            pointer operator->() {
+                return m_ptr;
+            }
+
+            const_iterator &operator++() {
+                ++m_ptr;
+                return *this;
+            }
+
+            const_iterator &operator--() {
+                --m_ptr;
+                return *this;
+            }
+
+            const_iterator &operator=(const iterator &other) {
+                this->m_ptr = other.m_ptr;
+                return *this;
+            }
+
+            const_iterator operator++(int) {
+                const_iterator tmp = *this;
+                ++(*this);
+                return tmp;
+            }
+
+            const_iterator operator--(int) {
+                iterator tmp = *this;
+                --(*this);
+                return tmp;
+            }
+
+            friend bool operator==(const const_iterator &a, const const_iterator &b) {
+                return a.m_ptr == b.m_ptr;
+            }
+
+            friend bool operator!=(const const_iterator &a, const const_iterator &b) {
+                return !(a == b);
+            }
+
+            friend ptrdiff_t operator-(const const_iterator &a, const const_iterator &b) {
+                return a.m_ptr - b.m_ptr;
+            }
+
+            const_iterator &operator+(size_t n) noexcept {
+                m_ptr = m_ptr + n;
+                return *this;
+            }
+
+            const_iterator &operator-(size_t n) noexcept {
+                m_ptr = m_ptr - n;
+                return *this;
+            }
+
+        private:
+            pointer m_ptr;
+        };
+
+//        using const_iterator = iterator;
 
         dummy_vector() noexcept = default;
 
@@ -89,8 +170,9 @@ namespace bmstu {
                 *first = value;
             }
         }
+
         //Конструктор копироания
-        dummy_vector(const dummy_vector<Type> &other) : size_(other.size()), capacity_(other.capacity()), data_(size_){
+        dummy_vector(const dummy_vector<Type> &other) : size_(other.size()), capacity_(other.capacity()), data_(size_) {
             std::copy(other.begin(), other.end(), begin());
         }
 
@@ -99,7 +181,8 @@ namespace bmstu {
             this->swap(other);
         }
 
-        dummy_vector(std::initializer_list<Type> ilist) : size_(ilist.size()), capacity_(ilist.size()), data_(ilist.size()) {
+        dummy_vector(std::initializer_list<Type> ilist) : size_(ilist.size()), capacity_(ilist.size()),
+                                                          data_(ilist.size()) {
             std::copy(ilist.begin(), ilist.end(), begin());
         }
 
@@ -135,7 +218,7 @@ namespace bmstu {
             return *this;
         }
 
-        friend dummy_vector<Type> operator+(const dummy_vector<Type> & left, const dummy_vector<Type> & right){
+        friend dummy_vector<Type> operator+(const dummy_vector<Type> &left, const dummy_vector<Type> &right) {
             size_t size = left.size_ + right.size_;
             dummy_vector<Type> result(size);
             std::copy(left.begin(), left.end(), result.begin());
@@ -145,27 +228,27 @@ namespace bmstu {
 
         ///Iterators
         iterator begin() noexcept {
-            return data_.Get();
+            return iterator(data_.Get());
         }
 
         iterator end() noexcept {
-            return data_.Get() + size_;
+            return iterator(data_.Get() + size_);
         }
 
         const_iterator begin() const noexcept {
-            return data_.Get();
+            return const_iterator(data_.Get());
         }
 
         const_iterator end() const noexcept {
-            return data_.Get() + size_;
+            return const_iterator(data_.Get() + size_);
         }
 
         const_iterator cbegin() const noexcept {
-            return data_.Get();
+            return const_iterator(data_.Get());
         }
 
         const_iterator cend() const noexcept {
-            return data_.Get() + size_;
+            return const_iterator(data_.Get() + size_);
         }
 
         typename iterator::reference operator[](size_t index) noexcept {
@@ -190,6 +273,7 @@ namespace bmstu {
             } else {
                 return const_cast <typename const_iterator::value_type>(data_[index]);
             }
+
         }
 
         //getters
@@ -236,7 +320,7 @@ namespace bmstu {
         void reserve(size_t new_capacity) {
             if (new_capacity > capacity_) {
                 array_bundle<Type> tmp(new_capacity);
-                std::move(data_.Get(),data_.Get() + size_,tmp.Get());
+                std::move(data_.Get(), data_.Get() + size_, tmp.Get());
                 data_.swap(tmp);
                 capacity_ = new_capacity;
             }
@@ -254,7 +338,7 @@ namespace bmstu {
             array_bundle<Type> temp(capacity_);
             std::move(begin(), begin() + n, temp.Get());
             std::move_backward(begin() + n, begin() + size_, temp.Get() + size_ + 1);
-            temp.Get()[n]  = std::move(value);
+            temp.Get()[n] = std::move(value);
             data_.swap(temp);
             size_++;
             return begin() + n;

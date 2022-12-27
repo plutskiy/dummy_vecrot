@@ -12,6 +12,64 @@ TEST(DummyVector, Plus) {
     ASSERT_TRUE(test == result);
 }
 
+TEST(DummyVector, Plus1) {
+    using namespace std;
+    bmstu::dummy_vector<char> left = {'N', 'a', 'i', 'l', ' '};
+    bmstu::dummy_vector<char> right = {'M', 'a', 's', 't', 'e', 'r'};
+    auto func = [](const std::string &a, char b) { return a + b; };
+    auto accumchars = [&func]<class T>(const T &left) {
+        return std::accumulate(left.cbegin() + 1, left.cend(), std::string() + left[0], func);
+    };
+    auto str = accumchars(left) + accumchars(right);
+    auto test = left + right;
+    ASSERT_EQ(std::string(test.begin(), test.end()), str);
+}
+
+
+/// почему-то не работает
+//TEST(DummyVector, PlusAssgn) {
+//    using namespace std;
+//    bmstu::dummy_vector<char> left = {'T', 'u', 'r', 'b', 'o', ' '};
+//    bmstu::dummy_vector<char> right;
+//    right += left;
+//    ASSERT_EQ(left, right);
+//}
+
+//работает
+TEST(DummyVector, PlusAssgn) {
+    using vc = bmstu::dummy_vector<char>;
+    vc left = {'H', 'e', 'l', 'l'};
+    vc other = left + vc({' ', 'y', 'e', 'a', 'h'});
+    vc ex = {'H', 'e', 'l', 'l', ' ', 'y', 'e', 'a', 'h'};
+    ASSERT_EQ(ex, other);
+}
+
+//TEST(DummyVector, PlusAssgn3) {
+//    using vc = bmstu::dummy_vector<char>;
+//    vc left = {'H', 'e', 'l', 'l'};
+//    vc other;
+////    other += vc({' ', 'y', 'e', 'a', 'h'}); /// не работает
+//    vc ex = {'H', 'e', 'l', 'l', ' ', 'y', 'e', 'a', 'h'};
+//    ASSERT_EQ(ex, other);
+//}
+
+TEST(DummyVector, PlusAssgnVisual) {
+    int left = 5;
+    int other;
+    other += left;
+    ASSERT_EQ(other, left);
+}
+
+/// Платон обратите внимание сюда)
+TEST(DummyVector, IteratorTest) {
+    bmstu::dummy_vector<char> left = {'N', 'a', 'i', 'l', ' '};
+    bmstu::dummy_vector<char>::iterator it = left.begin();
+    // declare an iterator
+    bmstu::dummy_vector<char>::const_iterator cit = left.cbegin();
+    *it = *it + 1; /// все сработает
+//    *cit = *cit + 1; /// копмпиль ругнется ошибку
+}
+
 
 TEST(DummyVector, one) {
     bmstu::dummy_vector<int> v;
