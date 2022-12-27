@@ -11,7 +11,7 @@ FetchContent_MakeAvailable(googletest)
 
 set(CMAKE_CXX_STANDARD 23)
 set(TEST_NAME ${PROJECT_NAME}_tests)
-add_executable(${TEST_NAME} example_test.cpp array_bundle.h bmstu_vector.h)
+add_executable(${TEST_NAME} dummy_vector_test.cpp array_bundle.h dummy_vector.h)
 target_link_libraries(${TEST_NAME} gtest_main)
 
 enable_testing()
