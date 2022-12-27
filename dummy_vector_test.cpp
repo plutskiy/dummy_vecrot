@@ -289,15 +289,15 @@ TEST(DummyVector, Insert2) {
 //    }
 //}
 
-TEST(DummyVector, Reserve) {
+TEST(DummyVector, reserve) {
     bmstu::dummy_vector<int> v;
     // зарезервируем 5 мест в векторе
-    v.Reserve(5);
+    v.reserve(5);
     ASSERT_EQ(v.capacity(), 5);
     ASSERT_TRUE(v.empty());
 
     // попытаемся уменьшить capacity до 1
-    v.Reserve(1);
+    v.reserve(1);
     // capacity должно остаться прежним
     ASSERT_EQ(v.capacity(), 5);
     // поместим 10 элементов в вектор
@@ -306,7 +306,7 @@ TEST(DummyVector, Reserve) {
     }
     ASSERT_EQ(v.size(), 10);
     // увеличим capacity до 100
-    v.Reserve(100);
+    v.reserve(100);
     // проверим, что размер не поменялся
     ASSERT_EQ(v.size(), 10);
     ASSERT_EQ(v.capacity(), 100);
