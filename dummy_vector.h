@@ -158,8 +158,6 @@ namespace bmstu {
             pointer m_ptr;
         };
 
-//        using const_iterator = iterator;
-
         dummy_vector() noexcept = default;
 
         dummy_vector(size_t size, const Type &value = Type{}) :
@@ -218,12 +216,21 @@ namespace bmstu {
             return *this;
         }
 
-        friend dummy_vector<Type> operator+(const dummy_vector<Type> &left, const dummy_vector<Type> &right) {
+        friend dummy_vector<Type> operator+(const dummy_vector<Type> & left, const dummy_vector<Type> & right){
             size_t size = left.size_ + right.size_;
             dummy_vector<Type> result(size);
             std::copy(left.begin(), left.end(), result.begin());
             std::copy(right.begin(), right.end(), result.begin() + left.size_) + 1;
             return result;
+        }
+
+        dummy_vector<Type> operator+=(const dummy_vector<Type> & other) {
+            size_t new_size = size_ + other.size_;
+            dummy_vector<Type> copy(*this);
+            dummy_vector<Type> result(new_size);
+            result = copy + other;
+            *this = (std::move(result));
+            return *this;
         }
 
         ///Iterators

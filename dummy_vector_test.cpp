@@ -26,17 +26,17 @@ TEST(DummyVector, Plus1) {
 }
 
 
-/// почему-то не работает
-//TEST(DummyVector, PlusAssgn) {
-//    using namespace std;
-//    bmstu::dummy_vector<char> left = {'T', 'u', 'r', 'b', 'o', ' '};
-//    bmstu::dummy_vector<char> right;
-//    right += left;
-//    ASSERT_EQ(left, right);
-//}
+// почему-то не работает
+TEST(DummyVector, PlusAssgn) {
+    using namespace std;
+    bmstu::dummy_vector<char> left = {'T', 'u', 'r', 'b', 'o', ' '};
+    bmstu::dummy_vector<char> right;
+    right += left;
+    ASSERT_EQ(left, right);
+}
 
 //работает
-TEST(DummyVector, PlusAssgn) {
+TEST(DummyVector, PlusAssgn2) {
     using vc = bmstu::dummy_vector<char>;
     vc left = {'H', 'e', 'l', 'l'};
     vc other = left + vc({' ', 'y', 'e', 'a', 'h'});
@@ -44,18 +44,20 @@ TEST(DummyVector, PlusAssgn) {
     ASSERT_EQ(ex, other);
 }
 
-//TEST(DummyVector, PlusAssgn3) {
-//    using vc = bmstu::dummy_vector<char>;
-//    vc left = {'H', 'e', 'l', 'l'};
-//    vc other;
-////    other += vc({' ', 'y', 'e', 'a', 'h'}); /// не работает
-//    vc ex = {'H', 'e', 'l', 'l', ' ', 'y', 'e', 'a', 'h'};
-//    ASSERT_EQ(ex, other);
-//}
+TEST(DummyVector, PlusAssgn3) {
+    using vc = bmstu::dummy_vector<char>;
+    vc left = {'H', 'e', 'l', 'l'};
+    vc other;
+    left += vc({' ', 'y', 'e', 'a', 'h'}); /// не работает
+    vc ex = {'H', 'e', 'l', 'l', ' ', 'y', 'e', 'a', 'h'};
+    ASSERT_EQ(ex, left);
+}
 
+//Иван Николаевич, этот не проходил, потому что мы не присвоили other значение, и у нас тут идет undefined behavior
+//мне просто надо было и справить?
 TEST(DummyVector, PlusAssgnVisual) {
     int left = 5;
-    int other;
+    int other = 0;
     other += left;
     ASSERT_EQ(other, left);
 }
