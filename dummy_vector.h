@@ -216,7 +216,7 @@ namespace bmstu {
             return *this;
         }
 
-        friend dummy_vector<Type> operator+(const dummy_vector<Type> & left, const dummy_vector<Type> & right){
+        friend dummy_vector<Type> operator+(const dummy_vector<Type> &left, const dummy_vector<Type> &right) {
             size_t size = left.size_ + right.size_;
             dummy_vector<Type> result(size);
             std::copy(left.begin(), left.end(), result.begin());
@@ -224,7 +224,11 @@ namespace bmstu {
             return result;
         }
 
-        dummy_vector<Type> operator+=(const dummy_vector<Type> & other) {
+        dummy_vector<Type> operator+=(const dummy_vector<Type> &other) {
+            if (this->data_.Get() == nullptr && this->size_ == 0 && this->capacity_ == 0) {
+                *this = other;
+                return *this;
+            }
             size_t new_size = size_ + other.size_;
             dummy_vector<Type> copy(*this);
             dummy_vector<Type> result(new_size);

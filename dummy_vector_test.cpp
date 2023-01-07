@@ -27,6 +27,8 @@ TEST(DummyVector, Plus1) {
 
 
 // почему-то не работает
+// потому что вектор это не plain-тип
+// у него есть дефолтный конструктор
 TEST(DummyVector, PlusAssgn) {
     using namespace std;
     bmstu::dummy_vector<char> left = {'T', 'u', 'r', 'b', 'o', ' '};
